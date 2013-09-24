@@ -21,9 +21,7 @@ class MainViewController < UIViewController
     @previewLayer.setPosition(CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect)))
     self.view.layer.addSublayer(@previewLayer)
 
-    # @queue = Dispatch::Queue.main
     @queue = Dispatch::Queue.new('camQueue')
-
     @output = AVCaptureMetadataOutput.alloc.init
     @output.setMetadataObjectsDelegate self, queue: @queue.dispatch_object
 
@@ -37,16 +35,12 @@ class MainViewController < UIViewController
   end
  
   def captureOutput(captureOutput, didOutputMetadataObjects: metadataObjects, fromConnection: connection)
-    if metadataObjects
-      @queue.async { @session.stopRunning }
-      Dispatch::Queue.main.async do
-        NSLog "#{metadataObjects[0].stringValue}"
-        alert = UIAlertView.new
-        alert.message = "#{metadataObjects[0].stringValue}"
-        alert.show
-        true
-      end
+    Dispatch::Queue.main.async do
+      NSLog "#{metadataObjects[0].stringValue}"
+      alert = UIAlertView.new
+      alert.message = "#{metadataObjects[0].stringValue}"
+      alert.show
+      true
     end
-    true
   end
 end
